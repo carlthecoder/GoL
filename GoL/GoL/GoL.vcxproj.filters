@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="System">
+      <UniqueIdentifier>{c5cd84a1-1ecd-44e6-818e-c85a84d7a510}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Simulations">
+      <UniqueIdentifier>{0856cef6-f52f-4dfa-b22a-494147373fa8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Drawables">
+      <UniqueIdentifier>{5977cf87-9344-4e0f-8884-df42a327472b}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Engine.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureManager.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="Tile.cpp">
+      <Filter>Drawables</Filter>
+    </ClCompile>
+    <ClCompile Include="GoLSim.cpp">
+      <Filter>Simulations</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Engine.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureManager.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="Tile.h">
+      <Filter>Drawables</Filter>
+    </ClInclude>
+    <ClInclude Include="GoLSim.h">
+      <Filter>Simulations</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
