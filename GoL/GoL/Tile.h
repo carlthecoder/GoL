@@ -4,7 +4,7 @@
 class Tile
 {
 public:
-	Tile(int x = 0, int y = 0, int tilesize = 32);
+	Tile(int x = 0, int y = 0, int tilesize = 8);
 	~Tile() = default;
 	Tile(const Tile&) = default;
 	Tile& operator=(const Tile& other)

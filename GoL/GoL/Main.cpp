@@ -9,7 +9,7 @@ int main()
 {
 	auto engine{ std::make_unique<Engine>() };
 
-	if (!engine->Initialize("GoL", 1216, 800, false))
+	if (!engine->Initialize("GoL", 1200, 800, false))
 	{
 		SDL_Log("An error occurred. The engine initialisation failed.\n");
 		return -1;

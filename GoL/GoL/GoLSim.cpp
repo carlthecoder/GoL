@@ -1,25 +1,18 @@
 #include "GoLSim.h"
-#include <random>
-#include <ctime>
-#include <iostream>
-#include <thread>
-#include <chrono>
-#include <future>
+
 
 void GoLSim::Initialize()
 {
-	for (size_t y = 0; y < colsize; ++y)
+	for (size_t y = 0; y < rows; ++y)
 	{
-		for (size_t x = 0; x < rowsize; ++x)
+		for (size_t x = 0; x < cols; ++x)
 		{
 			tiles[x][y] = Tile(x, y);
 			tiles[x][y].SetAlive(false);
 		}
 	}
 
-	//runUpdate = false;
-	//SetRandomStartingState();
-	GosperGlidingGun();
+	TestingShapes();
 }
 
 void GoLSim::Update()
@@ -29,46 +22,57 @@ void GoLSim::Update()
 		return;
 	}
 
-	SDL_Delay(250);
+	SDL_Delay(50);
 
-	for (size_t y = 0; y < colsize; ++y)
+	turnoffTiles.clear();
+	turnonTiles.clear();
+
+	for (size_t y = 0; y < rows; ++y)
 	{
-		for (size_t x = 0; x < rowsize; ++x)
+		for (size_t x = 0; x < cols; ++x)
 		{
-			//CheckSurroundingCells(refTile);
-			Tile& refTile { tiles[x][y] };
-			auto future = std::async(std::launch::async, &GoLSim::CheckSurroundingCells, this, std::ref(refTile));
+			Tile* refTile =  &tiles[x][y];
+			CheckSurroundingCells(refTile);
 
+			//auto future = std::async(std::launch::async, &GoLSim::CheckSurroundingCells, this, std::ref(refTile));
 			// std::thread and std::async by default copy the parameters to functions.
 			// std::ref ensures that the parameter is passed as a reference.
-
 			//std::thread t1(&GoLSim::CheckSurroundingCells, this, std::ref(refTile));
 			//t1.join();
-
-			/*auto future = std::async(std::launch::async, [this, x, y]()
-			{
-				CheckSurroundingCells(tiles[x][y]);
-			});*/
+			//auto future = std::async(std::launch::async, [this, x, y]()
+			//{
+			//	CheckSurroundingCells(tiles[x][y]);
+			//});
 		}
+	}
+
+	for (auto tile : turnonTiles)
+	{
+		tile->SetAlive(true);
+	}
+
+	for (auto tile : turnoffTiles)
+	{
+		tile->SetAlive(false);
 	}
 }
 
 void GoLSim::Render()
 {
-	for (size_t y = 0; y < colsize; ++y)
+	for (size_t y = 0; y < rows; ++y)
 	{
-		for (size_t x = 0; x < rowsize; ++x)
+		for (size_t x = 0; x < cols; ++x)
 		{
 			tiles[x][y].Draw();
 		}
 	}
 }
 
-void GoLSim::CheckSurroundingCells(Tile& refTile)
+void GoLSim::CheckSurroundingCells(Tile* refTile)
 {
 	int counter = 0;
-	unsigned int xCurrent = refTile.GetX();
-	unsigned int yCurrent = refTile.GetY();
+	unsigned int xCurrent = refTile->GetX();
+	unsigned int yCurrent = refTile->GetY();
 
 	int xLim = 0;
 	int yLim = 0;
@@ -80,7 +84,7 @@ void GoLSim::CheckSurroundingCells(Tile& refTile)
 		xLim = yLim = 2;
 		xStart = yStart = 0;
 	}
-	else if ((xCurrent == 0) && (yCurrent == colsize - 1))
+	else if ((xCurrent == 0) && (yCurrent == rows - 1))
 	{
 		xLim = yLim = 2;
 		xStart = 0;
@@ -93,19 +97,19 @@ void GoLSim::CheckSurroundingCells(Tile& refTile)
 		xStart = 0;
 		yStart = yCurrent - 1;
 	}
-	else if ((xCurrent == rowsize - 1) && (yCurrent == 0))
+	else if ((xCurrent == cols - 1) && (yCurrent == 0))
 	{
 		xLim = yLim = 2;
 		xStart = xCurrent - 1;
 		yStart = 0;
 	}
-	else if ((xCurrent == rowsize - 1) && (yCurrent == colsize - 1))
+	else if ((xCurrent == cols - 1) && (yCurrent == rows - 1))
 	{
 		xLim = yLim = 2;
 		xStart = xCurrent - 1;
 		yStart = yCurrent - 1;
 	}
-	else if (xCurrent == rowsize - 1)
+	else if (xCurrent == cols - 1)
 	{
 		xLim = 2;
 		yLim = 3;
@@ -119,7 +123,7 @@ void GoLSim::CheckSurroundingCells(Tile& refTile)
 		xStart = xCurrent - 1;
 		yStart = 0;
 	}
-	else if (yCurrent == colsize - 1)
+	else if (yCurrent == rows - 1)
 	{
 		xLim = 3;
 		yLim = 2;
@@ -140,7 +144,7 @@ void GoLSim::CheckSurroundingCells(Tile& refTile)
 	{
 		for (int y = yStart; y < LimY; ++y)
 		{
-			if (tiles[x][y] == refTile)
+			if (tiles[x][y] == *refTile)
 			{
 				continue;
 			}
@@ -149,23 +153,28 @@ void GoLSim::CheckSurroundingCells(Tile& refTile)
 				counter++;
 			}
 		}
-	}
+	}	
 
-	if (refTile.IsAlive())
+	if (!refTile->IsAlive())
+	{
+		if (counter == 3)
+		{
+			turnonTiles.push_back(refTile);
+		}
+	}
+	else
 	{
 		if (counter < 2)
 		{
-			refTile.SetAlive(false);
+			turnoffTiles.push_back(refTile);
 		}
-		else if (counter > 3)
+		else if (counter >= 4)
 		{
-			refTile.SetAlive(false);
-		}
+			turnoffTiles.push_back(refTile);
+ 		}
 	}
-	else if (counter == 3)
-	{
-		refTile.SetAlive(true);
-	}
+
+	
 }
 
 //Any live cell with two or three live neighbors survives.
@@ -181,11 +190,25 @@ void GoLSim::SetRandomStartingState()
 
 	for (size_t i = 0; i < amount; ++i)
 	{
-		int x = rand() % rowsize;
-		int y = rand() % colsize;
+		int x = rand() % cols;
+		int y = rand() % rows;
 
 		tiles[x][y].SetAlive(true);
 	}
+}
+
+void GoLSim::TestingShapes()
+{
+	SimpleGlider();
+}
+
+void GoLSim::SimpleGlider()
+{
+	tiles[25][25].SetAlive(true);
+	tiles[26][25].SetAlive(true);
+	tiles[27][25].SetAlive(true);
+	tiles[27][24].SetAlive(true);
+	tiles[26][23].SetAlive(true);
 }
 
 void GoLSim::GosperGlidingGun()
@@ -225,8 +248,8 @@ void GoLSim::GosperGlidingGun()
 	tiles[25][1].SetAlive(true);
 	tiles[25][7].SetAlive(true);
 
-	tiles[35][2].SetAlive(true);
-	tiles[35][3].SetAlive(true);
-	tiles[36][2].SetAlive(true);
-	tiles[36][3].SetAlive(true);
+	tiles[39][2].SetAlive(true);
+	tiles[39][3].SetAlive(true);
+	tiles[40][2].SetAlive(true);
+	tiles[40][3].SetAlive(true);
 }
