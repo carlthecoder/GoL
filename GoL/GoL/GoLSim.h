@@ -15,6 +15,8 @@ public:
 
 	void Initialize();
 	void TestingShapes();
+	void AnotherGlider();
+	void OneMinuteLife();
 	void SimpleGlider();
 	void GosperGlidingGun();
 	void Update();

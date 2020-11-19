@@ -70,7 +70,7 @@ void Engine::Update()
 
 void Engine::Render()
 {
-	SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+	SDL_SetRenderDrawColor(renderer, 20, 20, 20, SDL_ALPHA_OPAQUE);
 	SDL_RenderClear(renderer);
 
 	golSim->Render();

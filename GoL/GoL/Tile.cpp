@@ -7,7 +7,7 @@ Tile::Tile(int x, int y, int tilesize)
 	tileSize(tilesize)
 {
 	auto surface = SDL_CreateRGBSurface(0, tileSize, tileSize, 32, 0, 0, 0, 0);
-	SDL_FillRect(surface, 0, SDL_MapRGB(surface->format, 50, 255, 0));
+	SDL_FillRect(surface, 0, SDL_MapRGB(surface->format, 200, 240, 240));
 	texture = SDL_CreateTextureFromSurface(Engine::renderer, surface);
 	SDL_FreeSurface(surface);
 
