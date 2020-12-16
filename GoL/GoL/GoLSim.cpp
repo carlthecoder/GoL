@@ -195,7 +195,9 @@ void GoLSim::SetRandomStartingState()
 
 void GoLSim::TestingShapes()
 {
-	GosperGlidingGun();
+	//GosperGlidingGun();
+
+	//OneMinuteLife();
 }
 
 void GoLSim::AnotherGlider()
